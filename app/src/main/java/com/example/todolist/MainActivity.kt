@@ -14,26 +14,26 @@ class MainActivity : AppCompatActivity() {
     private lateinit var linearLayoutNotes: LinearLayout
     private lateinit var buttonAddNode: FloatingActionButton
 
-    private val notes = arrayListOf<Note>()
+    private val database = Database
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initViews()
 
-        for(i in 0..20) {
-            val note = Note(i, "Note $i", Random.nextInt(3))
-            notes.add(note)
-        }
-
-        showNotes()
         buttonAddNode.setOnClickListener {
             startActivity(AddNoteActivity.newIntent(this))
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        showNotes()
+    }
+
     private fun showNotes() {
-        for (note in notes) {
+        linearLayoutNotes.removeAllViews()
+        for (note in database.notes) {
             val view: View = layoutInflater.inflate(R.layout.note_item, linearLayoutNotes, false)
             val textViewNote: TextView = view.findViewById(R.id.textViewNote)
             textViewNote.text = note.text

@@ -21,6 +21,10 @@ class AddNoteActivity : AppCompatActivity() {
     private lateinit var radioButtonHigh: RadioButton
     private lateinit var buttonSaveNote: Button
 
+
+    private val database = Database
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_note)
@@ -34,10 +38,14 @@ class AddNoteActivity : AppCompatActivity() {
     private fun saveNote() {
         val text = editTextNote.text.toString().trim()
         val priority = getPriority()
+        val id = database.notes.size
         if (text.isEmpty()) {
             Toast.makeText(this, R.string.toast_for_empty_note, Toast.LENGTH_SHORT).show()
         } else {
-            TODO()
+            val note = Note(id, text, priority)
+            database.add(note)
+
+            finish()
         }
     }
 
