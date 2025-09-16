@@ -6,12 +6,13 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var linearLayoutNotes: LinearLayout
+    private lateinit var recyclerViewNotes: RecyclerView
     private lateinit var buttonAddNode: FloatingActionButton
 
     private val database = Database
@@ -38,6 +39,11 @@ class MainActivity : AppCompatActivity() {
             val textViewNote: TextView = view.findViewById(R.id.textViewNote)
             textViewNote.text = note.text
 
+            view.setOnClickListener {
+                database.remove(note.id)
+                showNotes()
+            }
+
             val colorResId = when(note.priority) {
                 0 -> R.color.OldRose
                 1 -> R.color.olivine
@@ -51,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-        linearLayoutNotes = findViewById(R.id.linearLayoutNotes)
+        recyclerViewNotes = findViewById(R.id.recyclerViewNotes)
         buttonAddNode = findViewById(R.id.buttonAddNode)
     }
 }
