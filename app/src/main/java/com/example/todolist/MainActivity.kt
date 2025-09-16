@@ -27,7 +27,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         showNotes()
+        buttonAddNode.setOnClickListener {
+            startActivity(AddNoteActivity.newIntent(this))
+        }
     }
+
     private fun showNotes() {
         for (note in notes) {
             val view: View = layoutInflater.inflate(R.layout.note_item, linearLayoutNotes, false)
