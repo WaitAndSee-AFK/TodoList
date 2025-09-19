@@ -29,12 +29,11 @@
             _notes.add(note)
         }
 
-        fun remove(id: Int) {
-            for (i in 0.._notes.size) {
-                val note = _notes[i]
-                if (note.id ==  id) {
-                    remove(i)
-                }
+        fun remove(id: Int): Boolean {
+            return try {
+                _notes.removeIf { it.id == id }
+            } catch (e: Exception) {
+                false
             }
         }
     }
