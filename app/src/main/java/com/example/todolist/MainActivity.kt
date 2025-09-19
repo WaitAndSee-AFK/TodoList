@@ -26,7 +26,12 @@ class MainActivity : AppCompatActivity() {
 
         notesAdapter = NotesAdapter()
         recyclerViewNotes.adapter = notesAdapter
-
+        notesAdapter.onNoteClickListener = object : NotesAdapter.OnNoteClickListener {
+            override fun onNoteClick(note: Note) {
+                database.remove(note.id)
+                showNotes()
+            }
+        }
         buttonAddNode.setOnClickListener {
             startActivity(AddNoteActivity.newIntent(this))
         }
