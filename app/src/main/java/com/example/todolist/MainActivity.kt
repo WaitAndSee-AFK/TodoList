@@ -6,6 +6,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -28,10 +29,35 @@ class MainActivity : AppCompatActivity() {
         recyclerViewNotes.adapter = notesAdapter
         notesAdapter.onNoteClickListener = object : NotesAdapter.OnNoteClickListener {
             override fun onNoteClick(note: Note) {
-                database.remove(note.id)
-                showNotes()
+//                database.remove(note.id)
+//                showNotes()
             }
         }
+
+        val itemTouchHelper: ItemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0,
+            ItemTouchHelper.LEFT
+        ){
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean = false
+
+            override fun onSwiped(
+                viewHolder: RecyclerView.ViewHolder,
+                direction: Int
+            ) {
+                val position = viewHolder.adapterPosition
+                val note = notesAdapter.notes.get(position)
+                note.let {
+                    database.remove(it.id)
+                    notesAdapter.updateNotes(database.notes)
+                }
+            }
+        })
+        itemTouchHelper.attachToRecyclerView(recyclerViewNotes)
+
         buttonAddNode.setOnClickListener {
             startActivity(AddNoteActivity.newIntent(this))
         }
