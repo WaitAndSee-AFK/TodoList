@@ -1,7 +1,12 @@
-package com.example.todolist
+    package com.example.todolist
 
-class Note(
-    val id: Int,
-    val text: String,
-    val priority: Int
-)
+    import androidx.room.Entity
+    import androidx.room.PrimaryKey
+
+    @Entity(tableName = "notes")
+    class Note(
+        @PrimaryKey(autoGenerate = true)
+        val id: Int = 0,
+        val text: String,
+        val priority: Int
+    )
