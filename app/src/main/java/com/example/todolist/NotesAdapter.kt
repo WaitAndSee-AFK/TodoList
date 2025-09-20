@@ -9,13 +9,15 @@ import androidx.recyclerview.widget.RecyclerView
 
 class NotesAdapter : RecyclerView.Adapter<NotesAdapter.NotesViewHolder>() {
 
-    private val notes = arrayListOf<Note>()
+    private val _notes = arrayListOf<Note>()
+    val notes: List<Note>
+        get() = _notes.toList()
     var onNoteClickListener: OnNoteClickListener? = null
 
-    override fun getItemCount(): Int = notes.size
+    override fun getItemCount(): Int = _notes.size
 
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
-        val note = notes[position]
+        val note = _notes[position]
         holder.bind(note)
 
         holder.itemView.setOnClickListener {
@@ -33,8 +35,8 @@ class NotesAdapter : RecyclerView.Adapter<NotesAdapter.NotesViewHolder>() {
     }
 
     fun updateNotes(newNotes: List<Note>) {
-        notes.clear()
-        notes.addAll(newNotes)
+        _notes.clear()
+        _notes.addAll(newNotes)
         notifyDataSetChanged()
     }
 
