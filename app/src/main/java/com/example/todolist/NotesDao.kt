@@ -9,11 +9,11 @@ import androidx.room.Query
 interface NotesDao {
 
     @Query("SELECT * FROM notes")
-    fun getNotes(): List<Note>
+    suspend fun getNotes(): List<Note>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(note: Note)
+    suspend fun add(note: Note)
 
     @Query("DELETE FROM notes WHERE id = :id")
-    fun remove(id: Int)
+    suspend fun remove(id: Int)
 }
