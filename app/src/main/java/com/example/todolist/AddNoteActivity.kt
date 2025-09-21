@@ -12,6 +12,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AddNoteActivity : AppCompatActivity() {
 
@@ -21,8 +25,8 @@ class AddNoteActivity : AppCompatActivity() {
     private lateinit var radioButtonHigh: RadioButton
     private lateinit var buttonSaveNote: Button
 
-
-    private val database = Database
+    private lateinit var noteDatabase: NoteDatabase
+    private val coroutine = CoroutineScope(Dispatchers.IO)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +34,7 @@ class AddNoteActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_note)
         initViews()
 
+        noteDatabase = NoteDatabase.getInstance(application)
         buttonSaveNote.setOnClickListener {
             saveNote()
         }
@@ -38,24 +43,26 @@ class AddNoteActivity : AppCompatActivity() {
     private fun saveNote() {
         val text = editTextNote.text.toString().trim()
         val priority = getPriority()
-        val id = database.notes.size
         if (text.isEmpty()) {
             Toast.makeText(this, R.string.toast_for_empty_note, Toast.LENGTH_SHORT).show()
         } else {
-            val note = Note(id, text, priority)
-            database.add(note)
-
-            finish()
+            val note = Note(text, priority)
+            coroutine.launch {
+                noteDatabase.notesDao().add(note)
+                withContext(Dispatchers.Main) {
+                    finish()
+                }
+            }
         }
     }
 
-    private fun getPriority() : Int {
+    private fun getPriority(): Int {
         var priority: Int
-        if(radioButtonLow.isChecked) {
+        if (radioButtonLow.isChecked) {
             priority = 0
-        } else if(radioButtonMedium.isChecked) {
+        } else if (radioButtonMedium.isChecked) {
             priority = 1
-        } else  {
+        } else {
             priority = 2
         }
         return priority
