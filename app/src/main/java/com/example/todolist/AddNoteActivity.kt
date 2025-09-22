@@ -34,7 +34,9 @@ class AddNoteActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_note)
         initViews()
 
-        noteDatabase = NoteDatabase.getInstance(application)
+        coroutine.launch {
+            noteDatabase = NoteDatabase.getInstance(application)
+        }
         buttonSaveNote.setOnClickListener {
             saveNote()
         }
