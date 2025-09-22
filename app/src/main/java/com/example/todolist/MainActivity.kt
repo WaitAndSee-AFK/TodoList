@@ -39,7 +39,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        noteDatabase = NoteDatabase.getInstance(application)
+        coroutine.launch {
+            noteDatabase = NoteDatabase.getInstance(application)
+        }
         initViews()
 
         notesAdapter = NotesAdapter()
