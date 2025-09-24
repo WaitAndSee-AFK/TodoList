@@ -3,19 +3,13 @@ package com.example.todolist
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 
 class AddNoteActivity : AppCompatActivity() {
 
@@ -24,9 +18,7 @@ class AddNoteActivity : AppCompatActivity() {
     private lateinit var radioButtonMedium: RadioButton
     private lateinit var radioButtonHigh: RadioButton
     private lateinit var buttonSaveNote: Button
-
-    private lateinit var noteDatabase: NoteDatabase
-    private val coroutine = CoroutineScope(Dispatchers.IO)
+    private lateinit var viewModel: AddNoteViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,9 +26,12 @@ class AddNoteActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_note)
         initViews()
 
-        coroutine.launch {
-            noteDatabase = NoteDatabase.getInstance(application)
-        }
+        viewModel = ViewModelProvider(this).get(AddNoteViewModel::class.java)
+        viewModel.shouldCloseScreen.observe(this, Observer { shouldClose ->
+            if (shouldClose) {
+                finish()
+            }
+        })
         buttonSaveNote.setOnClickListener {
             saveNote()
         }
@@ -49,12 +44,7 @@ class AddNoteActivity : AppCompatActivity() {
             Toast.makeText(this, R.string.toast_for_empty_note, Toast.LENGTH_SHORT).show()
         } else {
             val note = Note(text, priority)
-            coroutine.launch {
-                noteDatabase.notesDao().add(note)
-                withContext(Dispatchers.Main) {
-                    finish()
-                }
-            }
+            viewModel.add(note)
         }
     }
 

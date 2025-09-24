@@ -1,58 +1,36 @@
 package com.example.todolist
 
 import android.os.Bundle
-import android.os.Looper
-import android.util.Log
-import android.view.View
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.concurrent.Executors
-import java.util.logging.Handler
-import kotlin.concurrent.thread
-import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var recyclerViewNotes: RecyclerView
     private lateinit var buttonAddNode: FloatingActionButton
     private lateinit var notesAdapter: NotesAdapter
-    private lateinit var noteDatabase: NoteDatabase
-
-    //    private val dispatcher = Executors.newFixedThreadPool(
-//        Runtime.getRuntime().availableProcessors()
-//    ).asCoroutineDispatcher()
-    private val coroutine = CoroutineScope(Dispatchers.Main)
+    private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        coroutine.launch {
-            noteDatabase = NoteDatabase.getInstance(application)
-        }
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         initViews()
 
         notesAdapter = NotesAdapter()
         recyclerViewNotes.layoutManager = LinearLayoutManager(this)
         recyclerViewNotes.adapter = notesAdapter
-        notesAdapter.onNoteClickListener = object : NotesAdapter.OnNoteClickListener {
-            override fun onNoteClick(note: Note) {
-//                database.remove(note.id)
-//                showNotes()
-            }
-        }
+
+        workingWithLiveData()
 
         val itemTouchHelper: ItemTouchHelper =
             ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
@@ -71,13 +49,7 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     val position = viewHolder.adapterPosition
                     val note = notesAdapter.notes.get(position)
-                    coroutine.launch {
-                        noteDatabase.notesDao().remove(note.id)
-                        withContext(Dispatchers.Main) {
-                            showNotes()
-                        }
-
-                    }
+                    viewModel.remove(note)
                 }
             })
         itemTouchHelper.attachToRecyclerView(recyclerViewNotes)
@@ -89,18 +61,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        showNotes()
+        workingWithLiveData()
     }
 
-    private fun showNotes() {
-        try {
-            coroutine.launch {
-                notesAdapter.updateNotes(noteDatabase.notesDao().getNotes())
-            }
-
-        } catch (e: Exception) {
-            Log.e("MainActivity", "Error loading notes", e)
-        }
+    private fun workingWithLiveData() {
+        viewModel.getNotes().observe(this, Observer<List<Note>> { notes ->
+            notesAdapter.updateNotes(notes)
+        })
     }
 
     private fun initViews() {
