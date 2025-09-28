@@ -38,13 +38,16 @@ android {
 
 dependencies {
 
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
+    implementation("io.reactivex.rxjava3:rxjava:3.1.5")
+
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
 
     val room_version = "2.8.0"
-
     implementation("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:${room_version}")
     kapt("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-rxjava3:${room_version}")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
