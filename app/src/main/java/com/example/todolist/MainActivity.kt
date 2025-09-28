@@ -1,17 +1,13 @@
 package com.example.todolist
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,8 +25,6 @@ class MainActivity : AppCompatActivity() {
         notesAdapter = NotesAdapter()
         recyclerViewNotes.layoutManager = LinearLayoutManager(this)
         recyclerViewNotes.adapter = notesAdapter
-
-        workingWithLiveData()
 
         val itemTouchHelper: ItemTouchHelper =
             ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
